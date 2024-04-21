@@ -1,0 +1,16 @@
+[Unit]
+Description=sentrum daemon
+
+[Service]
+ExecStart=/usr/bin/sentrum
+User=sentrum
+
+# Hardening
+PrivateTmp=true
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

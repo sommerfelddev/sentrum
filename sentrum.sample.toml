@@ -1,0 +1,46 @@
+[[wallets]]
+# Identifier for naming purposes (required)
+name = "alice"
+# Wallet xpub (required)
+xpub = "xpub6CkXHzuU1NyHUFNiQZLq2bgt6QPqjZbwpJ1MDgDeo4bWZ8ZP7HZr7v9WTLCQFhxVhqiJNcw5wSKE77rkAK1SzcuHjt36ZUibBHezGzGL9h9"
+# Script kind ("legacy","nested_segwit","segwit","taproot") (optional)
+#kind = "segwit"
+
+# Another wallet
+#[[wallets]]
+#name = "bob"
+#xpub = "xpubblablabla"
+
+[[actions]]
+type =  "terminal_print"
+
+# Add more actions here (ntfy, nostr, email, telegram, etc)
+#[[actions]]
+#type =  "<INSERT ACTION KIND>"
+#<.... INSERT ACTION SPECIFIC CONFIGURATION HERE...>
+
+
+[message]
+subject = "[{wallet}] new transaction"
+body = "net: {tx_net} sats, balance: {total_balance} sats, txid: {txid_short}"
+# Can be "plain", "markdown" or "html"
+format = "plain"
+# Configure blockexplorer urls. This is used to create the {tx_url} parameter
+block_explorers.mainnet = "https://mempool.space/tx/{txid}"
+block_explorers.testnet = "https://mempool.space/testnet/tx/{txid}"
+block_explorers.signet = "https://mempool.space/signet/tx/{txid}"
+
+[electrum]
+# Defaults:
+# - mainnet: ssl://fulcrum.sethforprivacy.com:50002
+# - testnet: ssl://electrum.blockstream.info:60002
+# - signet: ssl://mempool.space:60602
+# Use "tcp://" if you are connecting without SSL (e.g. "tcp://localhost:50001"
+# or "tcp://fwafiuesngirdghrdhgiurdhgirdgirdhgrd.onion:50001"
+url = "ssl://fulcrum.sethforprivacy.com:50002"
+# blockchain network ("bitcoin", "testnet", "signet", "regtest")
+network = "bitcoin"
+# Optional socks5 proxy (defaults to None)
+#socks5 = 127.0.0.1:9050
+# If using ssl with a trusted certificate, set this to true
+certificate_validation = false
