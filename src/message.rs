@@ -80,6 +80,7 @@ impl<'a, 'b> MessageParams<'a, 'b> {
 }
 
 #[derive(Deserialize, Debug, PartialEq, Copy, Clone)]
+#[serde(rename_all = "lowercase")]
 pub enum MessageFormat {
     Plain,
     Markdown,
