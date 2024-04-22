@@ -34,7 +34,8 @@ jobs:
       - 
         name: Checkout repository
         uses: actions/checkout@v4
-      - name: Get package name
+      - 
+        name: Get package version
         id: cargo-get
         uses: nicolaiunrein/cargo-get@master
         with:
