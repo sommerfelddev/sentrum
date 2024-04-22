@@ -11,6 +11,7 @@ use clap::Parser;
 use human_panic::setup_panic;
 
 use anyhow::{bail, Context, Result};
+#[cfg(unix)]
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::time::sleep;
 
@@ -43,6 +44,7 @@ fn set_signal_handlers() -> Result<()> {
         warn!("received ctrl-c signal. Exiting...");
         exit(0)
     });
+    #[cfg(unix)]
     tokio::spawn(async move {
         let mut stream = match signal(SignalKind::terminate()) {
             Err(e) => return e,
@@ -52,6 +54,7 @@ fn set_signal_handlers() -> Result<()> {
         warn!("received process termination signal. Exiting...");
         exit(0)
     });
+    #[cfg(unix)]
     tokio::spawn(async move {
         let mut stream = match signal(SignalKind::hangup()) {
             Err(e) => return e,
