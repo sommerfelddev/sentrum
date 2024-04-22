@@ -8,9 +8,12 @@ notifications, email, telegram, nostr, arbitrary command, etc).
 
 Either:
 
-* Compile from source using `cargo install sentrum`
-* Download the binary from the [releases page](releases)
-* If using archlinux, install it from the [AUR](https://aur.archlinux.org/packages/sentrum)
+* Compile from source using `cargo install sentrum` (binary will be installed in
+`~/.cargo/bin`)
+* Download the binary from the
+[releases page](https://github.com/sommerfelddev/sentrum/releases)
+* If using archlinux, install it from the AUR:
+[sentrum](https://aur.archlinux.org/packages/sentrum) or [sentrum-git](https://aur.archlinux.org/packages/sentrum-git)
 
 ## Configuration
 
