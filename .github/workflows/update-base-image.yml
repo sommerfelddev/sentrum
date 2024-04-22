@@ -48,7 +48,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/sentrum:latest
-            ghcr.io/${{ github.repository_owner }}/sentrum:${{ steps.cargo-get.outputs }}
+            ghcr.io/${{ github.repository_owner }}/sentrum:${{ steps.cargo-get.outputs.metadata }}
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.html_url }}
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
