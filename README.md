@@ -1,5 +1,10 @@
 # sentrum
 
+![Crates.io Total Downloads](https://img.shields.io/crates/d/sentrum?style=for-the-badge&label=crates.io)
+![AUR Version](https://img.shields.io/aur/version/sentrum?style=for-the-badge)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sommerfelddev/sentrum/ci.yml?style=for-the-badge&label=CI)
+![GitHub Release](https://img.shields.io/github/v/release/sommerfelddev/sentrum?style=for-the-badge)
+
 Daemon that monitors the Bitcoin blockchain for transactions involving your
 wallets and sends you notifications in many different channels (ntfy push
 notifications, email, telegram, nostr, arbitrary command, etc).
