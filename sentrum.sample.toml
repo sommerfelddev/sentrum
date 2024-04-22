@@ -41,6 +41,6 @@ url = "ssl://fulcrum.sethforprivacy.com:50002"
 # blockchain network ("bitcoin", "testnet", "signet", "regtest")
 network = "bitcoin"
 # Optional socks5 proxy (defaults to None)
-#socks5 = 127.0.0.1:9050
+#socks5 = "127.0.0.1:9050"
 # If using ssl with a trusted certificate, set this to true
 certificate_validation = false
