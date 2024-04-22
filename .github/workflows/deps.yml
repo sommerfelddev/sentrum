@@ -1,3 +1,7 @@
+name: Bump deps
+
+on:
+  workflow_dispatch:
 jobs:
   latest_deps:
     name: Latest Dependencies
