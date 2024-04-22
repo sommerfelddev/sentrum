@@ -5,7 +5,7 @@ COPY . .
 
 RUN cargo build --release
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim as final
 
 # Upgrade all packages and install dependencies
 RUN apt-get update \
