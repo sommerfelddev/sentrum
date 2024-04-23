@@ -346,7 +346,52 @@ sudo systemclt enable --now sentrum.service
 
 6. Check the logs with `journalctl -fu sentrum`
 
-# Future Work
+## Docker
+
+To run sentrum using Docker, you can either build the image yourself or use the prebuilt image.
+
+### Building the image
+
+To build the image from source, run the following:
+
+```bash
+git clone https://github.com/sommerfelddev/sentrum.git
+cd sentrum
+docker build -t sentrum:local .
+```
+
+To use the prebuilt image, simply pull from GHCR:
+
+```bash
+docker pull docker pull ghcr.io/sommerfelddev/sentrum:latest
+```
+
+Note that there are two types of tags:
+
+`latest`: a tag from the latest commit to master
+`x.x.x`: (i.e. `0.1.1`) a tag of the corresponding sentrum version
+
+### Running the image
+
+To run the image, simply run the following, passing in the `sentrum.toml` file you created and configured earlier:
+
+```bash
+docker run --rm -it --volume ./sentrum.toml:/sentrum.toml ghcr.io/sommerfelddev/sentrum:latest
+```
+
+If using Docker compose, you can configure the service as follows:
+
+```yaml
+services:
+  sentrum:
+    container_name: sentrum
+    image: ghcr.io/sommerfelddev/sentrum:latest
+    restart: unless-stopped
+    volumes:
+      - ./sentrum.toml:/sentrum.toml
+```
+
+## Future Work
 
 * More action types:
     - Matrix DM
