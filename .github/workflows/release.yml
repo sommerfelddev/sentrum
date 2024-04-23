@@ -20,7 +20,7 @@ jobs:
             name: sentrum-${{ github.ref_name }}--darwin-x86_64.tar.gz
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@master
       with:
           toolchain: stable
@@ -32,15 +32,17 @@ jobs:
         strip target/release/${{ matrix.bin }}
         if [[ "${{ matrix.os }}" == "windows-latest" ]]
         then
-          7z a ../../${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
+          7z a ${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
         else
-          tar czvf ../../${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
+          tar czvf ${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
         fi
     - name: Publish
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
+          body_path: docs/CHANGELOG.md
           draft: true
+          fail_on_unmatched_files: true
           files: sentrum-*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
