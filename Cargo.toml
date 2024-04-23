@@ -1,6 +1,6 @@
 [package]
 name = "sentrum"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["sommerfeld <sommerfeld@sommerfeld.dev>"]
 description = "Daemon that monitors watch-only bitcoin wallets"
