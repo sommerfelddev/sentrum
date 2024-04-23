@@ -28,15 +28,15 @@ impl<'a, 'b> MessageParams<'a, 'b> {
         }
     }
 
-    fn tx_net(&self) -> i64 {
+    pub fn tx_net(&self) -> i64 {
         (self.tx.received as i64) - (self.tx.sent as i64)
     }
 
-    fn tx_height(&self) -> Option<u32> {
+    pub fn tx_height(&self) -> Option<u32> {
         self.tx.confirmation_time.as_ref().map(|x| x.height)
     }
 
-    fn confs(&self) -> u32 {
+    pub fn confs(&self) -> u32 {
         let current_height = self.current_height;
         self.tx_height()
             .map(|h| {
@@ -49,7 +49,7 @@ impl<'a, 'b> MessageParams<'a, 'b> {
             .unwrap_or_default()
     }
 
-    fn conf_timestamp(&self) -> String {
+    pub fn conf_timestamp(&self) -> String {
         self.tx
             .confirmation_time
             .as_ref()
@@ -62,10 +62,10 @@ impl<'a, 'b> MessageParams<'a, 'b> {
             .unwrap_or_default()
     }
 
-    fn txid(&self) -> String {
+    pub fn txid(&self) -> String {
         self.tx.txid.to_string()
     }
-    fn txid_short(&self) -> String {
+    pub fn txid_short(&self) -> String {
         let txid = self.txid();
         format!("{}...{}", &txid[..6], &txid[txid.len() - 6..])
     }
