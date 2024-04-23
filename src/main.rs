@@ -26,10 +26,12 @@ use crate::{
 };
 
 fn set_logger() {
-    pretty_env_logger::formatted_builder()
-        .filter_module(env!("CARGO_PKG_NAME"), log::LevelFilter::Info)
-        .parse_default_env()
-        .init();
+    let mut builder = pretty_env_logger::formatted_builder();
+    match std::env::var("RUST_LOG") {
+        Ok(_) => builder.parse_default_env(),
+        Err(_) => builder.filter_module(env!("CARGO_PKG_NAME"), log::LevelFilter::Info),
+    };
+    builder.init();
 }
 
 fn set_signal_handlers() -> Result<()> {
