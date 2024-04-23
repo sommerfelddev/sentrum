@@ -1,8 +1,4 @@
-0.1.3 (2024-04-23)
-------------------
-* Fixed release job (hopefully)
-
-0.1.2 (2024-04-23)
+0.1.{2,3,4} (2024-04-23)
 ------------------
 * Fixed AUR build
 * Added version to release file names
