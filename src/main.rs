@@ -17,7 +17,7 @@ mod config;
 mod message;
 mod wallets;
 
-use crate::actions::get_actions;
+use crate::actions::{get_actions, run_actions};
 use crate::message::MessageParams;
 use crate::{
     blockchain::BlockchainState,
@@ -63,14 +63,6 @@ fn set_signal_handlers() -> Result<()> {
     Ok(())
 }
 
-async fn run_test_actions(actions: &[&(dyn Action<'_> + Sync)]) {
-    TokioScope::scope_and_block(|s| {
-        for &action in actions {
-            s.spawn(action.run(None));
-        }
-    });
-}
-
 fn get_and_handle_new_txs(
     wallet_info: &SafeWalletInfo,
     actions: &[&(dyn Action<'_> + Sync)],
@@ -80,13 +72,7 @@ fn get_and_handle_new_txs(
     TokioScope::scope_and_block(|s| {
         for tx in txs.iter() {
             let params = MessageParams::new(tx, &locked_wallet_info);
-            s.spawn(async move {
-                TokioScope::scope_and_block(|s| {
-                    for &action in actions {
-                        s.spawn(action.run(Some(&params)));
-                    }
-                });
-            });
+            s.spawn(run_actions(actions, Some(params)));
         }
     });
     Ok(())
@@ -148,7 +134,7 @@ async fn do_main() -> Result<()> {
     let actions_ref = actions.iter().map(Box::as_ref).collect::<Vec<_>>();
 
     if args.test() {
-        run_test_actions(&actions_ref).await;
+        run_actions(&actions_ref, None).await;
         return Ok(());
     }
 

@@ -1,6 +1,7 @@
 use std::fmt;
 
 use anyhow::Result;
+use async_scoped::TokioScope;
 use async_trait::async_trait;
 use log::{debug, info, warn};
 use serde::Deserialize;
@@ -118,4 +119,15 @@ pub async fn get_actions<'a>(
     }
 
     result
+}
+
+pub async fn run_actions(
+    actions: &[&(dyn Action<'_> + Sync)],
+    params: Option<MessageParams<'_, '_>>,
+) {
+    TokioScope::scope_and_block(|s| {
+        for &action in actions {
+            s.spawn(action.run(params.as_ref()));
+        }
+    });
 }
