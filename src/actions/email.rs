@@ -104,6 +104,10 @@ impl<'a> EmailAction<'a> {
 
 #[async_trait]
 impl Action<'_> for EmailAction<'_> {
+    fn name(&self) -> &'static str {
+        "email"
+    }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         let body = self.message_config.body(params)?;
         let html_body = match self.message_config.format() {

@@ -36,6 +36,10 @@ impl<'a> CommandAction<'a> {
 
 #[async_trait]
 impl Action<'_> for CommandAction<'_> {
+    fn name(&self) -> &'static str {
+        "command"
+    }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         let mut cmd = Command::new(&self.cmd_config.cmd);
         for arg in self.cmd_config.args.iter() {

@@ -173,6 +173,10 @@ impl<'a> NostrAction<'a> {
 
 #[async_trait]
 impl Action<'_> for NostrAction<'_> {
+    fn name(&self) -> &'static str {
+        "nostr"
+    }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         let subject = self.message_config.subject(params)?;
         let body = self.message_config.body(params)?;

@@ -17,6 +17,10 @@ impl<'a> DesktopNotificationAction<'a> {
 
 #[async_trait]
 impl Action<'_> for DesktopNotificationAction<'_> {
+    fn name(&self) -> &'static str {
+        "desktop_notification"
+    }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         use notify_rust::Notification;
         Notification::new()

@@ -106,6 +106,10 @@ impl<'a> NtfyAction<'a> {
 
 #[async_trait]
 impl Action<'_> for NtfyAction<'_> {
+    fn name(&self) -> &'static str {
+        "ntfy"
+    }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         let payload = self
             .payload_template

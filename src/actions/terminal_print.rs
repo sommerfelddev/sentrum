@@ -17,6 +17,8 @@ impl<'a> TerminalPrintAction<'a> {
 
 #[async_trait]
 impl Action<'_> for TerminalPrintAction<'_> {
+    fn name(&self) -> &'static str { "terminal_print" }
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()> {
         println!(
             "{}\n{}\n",

@@ -61,6 +61,8 @@ impl fmt::Display for AnyActionConfig {
 
 #[async_trait]
 pub trait Action<'a> {
+    fn name(&self) -> &'static str;
+
     async fn run(&self, params: Option<&MessageParams<'_, '_>>) -> Result<()>;
 }
 
