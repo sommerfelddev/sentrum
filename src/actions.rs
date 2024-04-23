@@ -129,6 +129,7 @@ pub async fn run_actions(
 ) {
     TokioScope::scope_and_block(|s| {
         for &action in actions {
+            debug!("running '{}' action", action.name());
             s.spawn(action.run(params.as_ref()));
         }
     });

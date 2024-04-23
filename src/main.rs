@@ -74,6 +74,7 @@ fn get_and_handle_new_txs(
     TokioScope::scope_and_block(|s| {
         for tx in txs.iter() {
             let params = MessageParams::new(tx, &locked_wallet_info);
+            info!("running actions for txid '{}'", params.txid_short());
             s.spawn(run_actions(actions, Some(params)));
         }
     });
@@ -136,6 +137,7 @@ async fn do_main() -> Result<()> {
     let actions_ref = actions.iter().map(Box::as_ref).collect::<Vec<_>>();
 
     if args.test() {
+        info!("running test actions");
         run_actions(&actions_ref, None).await;
         return Ok(());
     }
