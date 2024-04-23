@@ -1,16 +1,12 @@
-extern crate pretty_env_logger;
-#[macro_use]
-extern crate log;
-
 use std::process::exit;
 use std::time::Duration;
 
 use actions::Action;
+use anyhow::{bail, Context, Result};
 use async_scoped::TokioScope;
 use clap::Parser;
 use human_panic::setup_panic;
-
-use anyhow::{bail, Context, Result};
+use log::{error, info, warn};
 #[cfg(unix)]
 use tokio::signal::unix::{signal, SignalKind};
 use tokio::time::sleep;

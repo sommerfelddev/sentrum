@@ -6,6 +6,7 @@ use std::{
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 use const_format::{formatcp, map_ascii_case, Case};
+use log::info;
 use serde::Deserialize;
 
 use crate::{

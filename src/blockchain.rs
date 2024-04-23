@@ -4,6 +4,7 @@ use bdk::{
     blockchain::{ElectrumBlockchain, GetHeight},
     electrum_client::{Client, ConfigBuilder, Socks5Config},
 };
+use log::{debug, info, warn};
 use serde::Deserialize;
 
 fn get_default_electrum_server(network: Network) -> &'static str {

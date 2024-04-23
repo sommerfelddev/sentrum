@@ -13,6 +13,7 @@ use bdk::{
     template::{Bip44Public, Bip49Public, Bip84Public, Bip86Public},
     KeychainKind, SyncOptions, TransactionDetails, Wallet,
 };
+use log::{debug, error, warn};
 use serde::Deserialize;
 
 use crate::blockchain::{get_blockchain, ElectrumConfig};
