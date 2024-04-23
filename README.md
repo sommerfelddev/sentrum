@@ -348,7 +348,7 @@ sudo systemclt enable --now sentrum.service
 
 ## Docker
 
-To run Sentrum using Docker, you can either build the image yourself or use the prebuilt image.
+To run sentrum using Docker, you can either build the image yourself or use the prebuilt image.
 
 ### Building the image
 
@@ -369,7 +369,7 @@ docker pull docker pull ghcr.io/sommerfelddev/sentrum:latest
 Note that there are two types of tags:
 
 `latest`: a tag from the latest commit to master
-`x.x.x`: (i.e. `0.1.1`) a tag of the corresponding Sentrum version
+`x.x.x`: (i.e. `0.1.1`) a tag of the corresponding sentrum version
 
 ### Running the image
 
