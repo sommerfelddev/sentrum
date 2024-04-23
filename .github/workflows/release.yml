@@ -11,13 +11,13 @@ jobs:
         include:
           - os: ubuntu-latest
             bin: sentrum
-            name: sentrum-linux-x86_64.tar.gz
+            name: sentrum-${{ github.ref_name }}-linux-x86_64.tar.gz
           - os: windows-latest
             bin: sentrum.exe
-            name: sentrum-windows-x86_64.zip
-          - os: macOS-latest
+            name: sentrum-${{ github.ref_name }}-windows-x86_64.zip
+          - os: macos-latest
             bin: sentrum
-            name: sentrum-darwin-x86_64.tar.gz
+            name: sentrum-${{ github.ref_name }}--darwin-x86_64.tar.gz
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
