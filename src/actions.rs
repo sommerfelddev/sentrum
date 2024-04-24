@@ -3,7 +3,7 @@ use std::fmt;
 use anyhow::Result;
 use async_scoped::TokioScope;
 use async_trait::async_trait;
-use log::{debug, info, warn};
+use log::{debug, error, info, warn};
 use serde::Deserialize;
 
 use crate::message::MessageConfig;
@@ -139,7 +139,17 @@ pub async fn run_actions(
                         .unwrap_or("txid".to_string()),
                     action.name()
                 );
-                action.run(params_ref);
+                if let Err(e) = action.run(params_ref).await {
+                    error!(
+                        "[{}][{}][{}] could not run action: {}",
+                        params_ref.map(|p| p.wallet()).unwrap_or("wallet"),
+                        params_ref
+                            .map(|p| p.txid_short())
+                            .unwrap_or("txid".to_string()),
+                        action.name(),
+                        e
+                    );
+                }
             });
         }
     });
