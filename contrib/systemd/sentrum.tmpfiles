@@ -1,0 +1,2 @@
+d /var/lib/sentrum 0755 sentrum sentrum - -
+d /etc/sentrum 0755 sentrum sentrum - -
