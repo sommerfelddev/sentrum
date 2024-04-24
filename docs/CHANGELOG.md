@@ -1,3 +1,8 @@
+0.1.6 (2024-04-24)
+------------------
+* Improved systemd setup and instructions
+* Add manpage file in `contrib/man/sentrum.1`
+
 0.1.5 (2024-04-24)
 ------------------
 * Improved action failure logging
