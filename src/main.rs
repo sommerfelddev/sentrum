@@ -65,10 +65,10 @@ fn set_signal_handlers() -> Result<()> {
     Ok(())
 }
 
-fn get_and_handle_new_txs(
+async fn get_and_handle_new_txs(
     wallet_info: &SafeWalletInfo,
     actions: &[&(dyn Action<'_> + Sync)],
-) -> Result<()> {
+) {
     let mut locked_wallet_info = wallet_info.lock().unwrap();
     let txs = locked_wallet_info.get_new_txs();
     TokioScope::scope_and_block(|s| {
@@ -78,7 +78,6 @@ fn get_and_handle_new_txs(
             s.spawn(run_actions(actions, Some(params)));
         }
     });
-    Ok(())
 }
 
 async fn update_blockchain_thread(blockchain_state: &mut BlockchainState) {
@@ -90,9 +89,7 @@ async fn update_blockchain_thread(blockchain_state: &mut BlockchainState) {
 
 async fn watch_wallet_thread(wallet_info: &SafeWalletInfo, actions: &[&(dyn Action<'_> + Sync)]) {
     loop {
-        if let Err(e) = get_and_handle_new_txs(wallet_info, actions) {
-            warn!("{:?}", e);
-        }
+        get_and_handle_new_txs(wallet_info, actions).await;
     }
 }
 
@@ -100,11 +97,7 @@ async fn initial_wallet_sync(blockchain_state: &mut BlockchainState, wallets: &[
     TokioScope::scope_and_block(|s| {
         s.spawn(async { blockchain_state.update_height() });
         for wallet_info in wallets {
-            s.spawn(async {
-                if let Err(e) = get_and_handle_new_txs(wallet_info, &[]) {
-                    warn!("{:?}", e);
-                }
-            });
+            s.spawn(get_and_handle_new_txs(wallet_info, &[]));
         }
     });
 }
