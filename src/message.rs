@@ -77,6 +77,10 @@ impl<'a, 'b> MessageParams<'a, 'b> {
     pub fn network(&self) -> Network {
         self.network
     }
+
+    pub fn wallet(&self) -> &str {
+        self.wallet
+    }
 }
 
 #[derive(Deserialize, Debug, PartialEq, Copy, Clone)]
