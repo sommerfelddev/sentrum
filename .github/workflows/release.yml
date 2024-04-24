@@ -11,13 +11,13 @@ jobs:
         include:
           - os: ubuntu-latest
             bin: sentrum
-            name: sentrum-${{ github.ref_name }}-linux-x86_64.tar.gz
+            name: sentrum-${{ github.ref_name }}-linux-x86_64
           - os: windows-latest
             bin: sentrum.exe
-            name: sentrum-${{ github.ref_name }}-windows-x86_64.zip
+            name: sentrum-${{ github.ref_name }}-windows-x86_64
           - os: macos-latest
             bin: sentrum
-            name: sentrum-${{ github.ref_name }}-darwin-x86_64.tar.gz
+            name: sentrum-${{ github.ref_name }}-darwin-x86_64
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -25,16 +25,20 @@ jobs:
       with:
           toolchain: stable
     - uses: Swatinem/rust-cache@v2
-    - run: cargo build --release
+    - run: cargo build --locked --release
     - name: Package
       shell: bash
       run: |
         strip target/release/${{ matrix.bin }}
+        mkdir ${{ matrix.name }}
+        cp target/release/${{ matrix.bin }} ${{ matrix.name }}
+        cp sentrum.sample.toml ${{ matrix.name }}
+        cp contrib/sentrum.service ${{ matrix.name }}
         if [[ "${{ matrix.os }}" == "windows-latest" ]]
         then
-          7z a ${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
+          7z a ${{ matrix.name }}.zip ${{ matrix.name }}
         else
-          tar czvf ${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
+          tar czvf ${{ matrix.name }}.tar.gz ${{ matrix.name }}
         fi
     - name: Generate Changelog
       run: utils/generate_changelog.sh ${{ github.ref_name }} > ${{ github.workspace }}-CHANGELOG.md
