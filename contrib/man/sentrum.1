@@ -1,0 +1,543 @@
+.nh
+.TH sentrum
+.PP
+
+
+
+
+
+.PP
+Daemon that monitors the Bitcoin blockchain for transactions involving your
+wallets and sends you notifications in many different channels (ntfy push
+notifications, email, telegram, nostr, arbitrary command, etc).
+
+.SH Installation
+.PP
+Either:
+
+.RS
+.IP \(bu 2
+Compile from source using \fBcargo install sentrum\fR (binary will be installed in
+\fB~/.cargo/bin\fR)
+.IP \(bu 2
+Download the binary from the
+releases page
+\[la]https://github.com/sommerfelddev/sentrum/releases\[ra]
+.IP \(bu 2
+If using archlinux, install it from the AUR:
+sentrum
+\[la]https://aur.archlinux.org/packages/sentrum\[ra] or sentrum-git
+\[la]https://aur.archlinux.org/packages/sentrum\-git\[ra]
+
+.RE
+
+.SH Configuration
+.SS Config file path
+.PP
+It will look for a \fBsentrum.toml\fR configuration file located in any of these
+directories (with this priority):
+
+.RS
+.IP "  1." 5
+Current working directory
+.IP "  2." 5
+\fB$XDG_CONFIG_HOME/sentrum\fR
+.IP "  3." 5
+\fB~/.config/sentrum\fR
+.IP "  4." 5
+\fB/etc/sentrum\fR (more appropriate if running as a systemd service)
+
+.RE
+
+.PP
+Alternatively, you can pass the configuration file path as an argument in the
+invocation and that will override any of the above.
+
+.PP
+\fBStart by copying the sample configuration to where you want it.\fP E.g.
+
+.EX
+cp sentrum.sample.toml sentrum.toml
+sudo cp sentrum.sample.toml /etc/sentrum/sentrum.toml
+.EE
+
+.PP
+or
+
+.EX
+sudo cp sentrum.sample.toml /etc/sentrum/sentrum.toml
+.EE
+
+.SS What to configure
+.PP
+You can use the 
+\[la]sentrum.sample.toml\[ra] file as an
+example.
+Most options have very good defaults so you don't need to change them unless you
+want to. \fBIn the examples below, commented options showcase their defaults,
+unless explicitly said otherwise.\fP
+
+.SS Required
+.RS
+.IP \(bu 2
+\fBwallets\fR: what wallets you want to monitor
+.IP \(bu 2
+\fBactions\fR: what actions you want to take once a relevant transaction is found
+
+.RE
+
+.SS Optional
+.RS
+.IP \(bu 2
+\fBelectrum\fR: by default, public electrum servers are used. You can configure it
+to connect to your own
+.IP \(bu 2
+\fBmessage\fR: this allows you to configure the subject and body templates of the
+notification message and choose the relevant data from the transaction that
+you want to include
+
+.RE
+
+.SH Wallets
+.PP
+For each wallet you want to track, add the following configuration:
+
+.EX
+[[wallets]]
+# Identifier for naming purposes (required)
+name = "alice"
+# Wallet xpub (required)
+xpub = "xpub6CkXHzuU1NyHUFNiQZLq2bgt6QPqjZbwpJ1MDgDeo4bWZ8ZP7HZr7v9WTLCQFhxVhqiJNcw5wSKE77rkAK1SzcuHjt36ZUibBHezGzGL9h9"
+# Script kind ("legacy","nested_segwit","segwit","taproot") (optional)
+#kind = "segwit"
+.EE
+
+.PP
+It assumes a BIP84 (native segwit, \fBbc1\fR style addresses) wallet. If your wallet
+has a different script kind add the field \fBkind = "legacy"\fR (or \fBnested_segwit\fR,
+or \fBtaproot\fR).
+
+.PP
+More complex wallet types are supported by providing \fBprimary = "<desc>"\fR and
+\fBchange = "<desc>"\fR wallet descriptors instead of \fBxpub =\fR and \fBkind =\fR\&.
+
+.SH Actions
+.PP
+For each new relevant transaction, you can take multiple actions. For each
+action you desire to take, you need to add the configuration:
+
+.EX
+[[actions]]
+# Action type (required)
+type =  "<INSERT ACTION KIND>"
+<.... INSERT ACTION SPECIFIC CONFIGURATION HERE...>
+.EE
+
+.PP
+Below we explain the configuration for each action kind. You can have multiple
+actions of the same kind (e.g. you want to send multiple emails from different
+accounts for some reason).
+
+.SS ntfy
+.PP
+This is the best straightforward way to get push notifications on a smartphone.
+
+.RS
+.IP "  1." 5
+Install the android/iOS app following the relevant links in https://ntfy.sh
+.IP "  2." 5
+If you don't run your own ntfy self-hosted server, create an account at
+ntfy.sh
+.IP "  3." 5
+Open the app, give it the needed permissions and configure your account
+credentials
+.IP "  4." 5
+Click on the \fB+\fR button and create a "topic", preferably named \fBsentrum\fR
+since that's what will be used by default.
+
+.RE
+
+.PP
+Then you just need to add the relevant configuration:
+
+.EX
+[[actions]]
+type =  "ntfy"
+# Credentials (required if you use a public server like the default one)
+credentials.username = "<YOUR USERNAME HERE>"
+credentials.password = "<YOUR PASSWORD HERE>"
+# ntfy server (optional)
+#url = "https://ntfy.sh"
+# notification channel name (optional)
+#topic = "sentrum"
+# Proxy used to connect (optional, defaults to None)
+#proxy = "socks5://127.0.0.1:9050"
+# Priority ("max", "high", "default", "low", "min") (optional)
+#priority = "default"
+.EE
+
+.SS nostr
+.PP
+Get notified by a nostr NIP04 encrypted
+DM
+\[la]https://github.com/nostr\-protocol/nips/blob/master/04.md\[ra] (leaks metadata
+but widely supported) or a
+NIP59 GiftWrap sealed sender DM
+\[la]https://github.com/nostr\-protocol/nips/blob/master/59.md\[ra]
+(more private but not supported by many clients). Add:
+
+.EX
+[[actions]]
+type = "nostr"
+# Which npub to send the DM (required)
+recipient = "<YOUR npub, hex pubkey, nprofile or nip05>"
+# If NIP59 giftwrap DMs should be used instead of NIP04 (optional)
+#sealed_dm = false
+# Which relays to use to send DMs
+#relays = ["wss://nostr.bitcoiner.social", "wss://nostr.oxtr.dev", "wss://nostr.orangepill.dev", "wss://relay.damus.io"]
+.EE
+
+.SS email
+.PP
+You need to add the configuration below and essentially configure an
+authenticated connection to your email provider's SMTP server. I cannot help you
+out with every provider's weird rules (maybe you need to allow 3rd party apps
+for gmail, who knows).
+
+.EX
+[[actions]]
+type =  "email"
+# SMTP server (required)
+server = "<insert smtp server url (e.g. smtp.gmail.com)"
+# SMTP connection type ("tls", "starttls" or "plain") (optional)
+#connection = "tls"
+# SMTP port (optional, defaults to 587 for TLS, 465 for STARTTLS and 25 for plain connections
+#port = 1025
+# SMTP credentials (required in most cases)
+credentials.authentication_identity = "<insert login email>"
+credentials.secret = "<insert password>"
+# Accept self signed certificates (needed if you are using protonmail-bridge) (optional)
+#self_signed_cert = false
+# Configure sender (required)
+from = "sentrum <youremailhere@host.tld>"
+# Configure recipient (optional, defaults to the same as the "from" sender)
+#to = "sentrum <youremailhere@host.tld>"
+.EE
+
+.SS telegram
+.RS
+.IP "  1." 5
+Create a new bot using @Botfather
+\[la]https://t.me/botfather\[ra] to get a token in the format \fB123456789:blablabla\fR\&.
+.IP "  2." 5
+Optionally configure the bot (name, profile pic, etc) with @Botfather
+.IP "  3." 5
+Open a chat with your bot
+.IP "  4." 5
+Add the relevant config:
+
+.RE
+
+.EX
+[[actions]]
+type =  "telegram"
+# Auth token of the bot created with @Botfather (required)
+bot_token = "<insert bot token>"
+# 10-digit user id of the DM recipient, go to your profile to get it (required)
+user_id = 1234567890
+.EE
+
+.SS command
+.PP
+Runs an external command where you can use transaction details as arguments.
+You can check what parameters (such as \fB{wallet}\fR or \fB{tx_net}\fR you can use in
+the message
+\[la]#message\[ra] configuration, since they are the same.
+
+.EX
+[[actions]]
+type = "command"
+cmd = "notify-send"
+args = ["[{wallet}] new tx: {tx_net} sats"]
+.EE
+
+.SS terminal_print
+.PP
+Justs prints the notification text in the terminal. You can potentially pipe it
+to something else.
+
+.EX
+[[actions]]
+type =  "terminal_print"
+.EE
+
+.SS desktop_notification
+.PP
+Displays the transaction message as a native desktop notification on the same
+computer sentrum is running.
+
+.EX
+[[actions]]
+type =  "desktop_notification"
+.EE
+
+.SH Message
+.PP
+You can configure the message template and it applies to almost every action
+type. This configuration is entirely optional since the default templates will
+be used if omitted.
+
+.PP
+Here is the default template:
+
+.EX
+[message]
+subject = "[{wallet}] new transaction"
+body = "net: {tx_net} sats, balance: {total_balance} sats, txid: {txid_short}"
+# Can be "plain", "markdown" or "html"
+format = "plain"
+# Configure blockexplorer urls. This is used to create the {tx_url} parameter
+block_explorers.mainnet = "https://mempool.space/tx/{txid}"
+block_explorers.testnet = "https://mempool.space/testnet/tx/{txid}"
+block_explorers.signet = "https://mempool.space/signet/tx/{txid}"
+.EE
+
+.PP
+In the subject and body templates, you can use the following parameters:
+
+.RS
+.IP \(bu 2
+\fB{tx_net}\fR: difference between the owned outputs and owned inputs
+.IP \(bu 2
+\fB{wallet}\fR: name of the configured wallet
+.IP \(bu 2
+\fB{total_balance}\fR: total balance of the wallet
+.IP \(bu 2
+\fB{txid}\fR: txid of the transaction
+.IP \(bu 2
+\fB{txid_short}\fR: truncated txid, easier on the eyes
+.IP \(bu 2
+\fB{received}\fR: sum of owned outputs
+.IP \(bu 2
+\fB{sent}\fR: sum of owned inputs
+.IP \(bu 2
+\fB{fee}\fR: transaction fee
+.IP \(bu 2
+\fB{current_height}\fR: current blockheight
+.IP \(bu 2
+\fB{tx_height}\fR: blockheight transaction confirmation
+.IP \(bu 2
+\fB{confs}\fR: number of transaction confirmations (0 for unconfirmed)
+.IP \(bu 2
+\fB{conf_timestamp}\fR: timestamp of the first confirmation in the \fB%Y-%m-%d %H:%M:%S\fR format
+.IP \(bu 2
+\fB{tx_url}\fR: a block explorer URL to the transaction
+
+.RE
+
+.SH Electrum server
+.PP
+By default, public electrum servers will be used. I \fBstrongly suggest
+configuring your own electrum server if you want privacy (as you should)\fP\&.
+
+.PP
+The defaults are:
+
+.EX
+[electrum]
+# Defaults:
+# - mainnet: ssl://fulcrum.sethforprivacy.com:50002
+# - testnet: ssl://electrum.blockstream.info:60002
+# - signet: ssl://mempool.space:60602
+# Use "tcp://" if you are connecting without SSL (e.g. "tcp://localhost:50001"
+# or "tcp://fwafiuesngirdghrdhgiurdhgirdgirdhgrd.onion:50001"
+url = "ssl://fulcrum.sethforprivacy.com:50002"
+# blockchain network ("bitcoin", "testnet", "signet", "regtest")
+network = "bitcoin"
+# Optional socks5 proxy (defaults to None)
+#socks5 = 127.0.0.1:9050
+# If using ssl with a trusted certificate, set this to true
+certificate_validation = false
+.EE
+
+
+.SH Usage
+.PP
+Just run \fBsentrum\fR without arguments (uses default config search paths) or
+\fBsentrum <path/to/config/file>\fR\&.
+
+.PP
+You can pass the \fB--test\fR flag to send a single test notification to all
+configured actions.
+
+.PP
+By default, only new transactions can trigger actions. If you pass
+\fB--notify-past-txs\fR, it will send notifications of past transactions
+in the initial wallet sync. If you have a long transaction history, this will
+spam your notification channels for every transaction.
+
+.SH systemd service
+.PP
+The ideal use-case is as a long running daemon, so it makes sense to configure
+it as a systemd service.
+
+.PP
+If you installed sentrum from the AUR, you just need to edit
+\fB/etc/sentrum/sentrum.conf\fR and do \fBsudo systemclt enable --now sentrum.service\fR
+
+.PP
+If you are installing \fBsentrum\fR manually (e.g. from the releases page or \fBcargo
+install\fR), you should (either from the cloned repository or from inside the
+extracted release archive):
+
+.RS
+.IP "  1." 5
+Copy systemd files to appropriate places:
+
+.RE
+
+.EX
+sudo cp contrib/systemd/sentrum.service
+sudo cp contrib/systemd/sentrum.sysusers /etc/sysusers.d/sentrum.conf
+sudo cp contrib/systemd/sentrum.tmpfiles /etc/tmpfiles.d/sentrum.conf
+.EE
+
+.RS
+.IP "  1." 5
+Reload systemd daemon, sysusers and tmpfiles:
+
+.RE
+
+.EX
+sudo systemclt daemon-reload
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+.EE
+
+.RS
+.IP "  1." 5
+Place the \fBsentrum.toml\fR (or \fBsentrum.sample.toml\fR) configuration file in
+\fB/etc/sentrum\fR and make sure the \fBsentrum\fR user owns it:
+
+.RE
+
+.EX
+sudo cp sentrum.toml /etc/sentrum
+sudo chown sentrum:sentrum /etc/sentrum/sentrum.toml
+.EE
+
+.RS
+.IP "  1." 5
+Enable and start the service:
+
+.RE
+
+.EX
+sudo systemclt enable --now sentrum.service
+.EE
+
+.RS
+.IP "  1." 5
+Check if everything is fine with \fBsystemctl status sentrum\fR
+.IP "  2." 5
+Check the logs with \fBjournalctl -fu sentrum\fR
+
+.RE
+
+.SH Docker
+.PP
+To run sentrum using Docker, you can either build the image yourself or use the prebuilt image.
+
+.SS Building the image
+.PP
+To build the image from source, run the following:
+
+.EX
+git clone https://github.com/sommerfelddev/sentrum.git
+cd sentrum
+docker build -t sentrum:local .
+.EE
+
+.PP
+To use the prebuilt image, simply pull from GHCR:
+
+.EX
+docker pull docker pull ghcr.io/sommerfelddev/sentrum:latest
+.EE
+
+.PP
+Note that there are two types of tags:
+
+.PP
+\fBlatest\fR: a tag from the latest commit to master
+\fBx.x.x\fR: (i.e. \fB0.1.1\fR) a tag of the corresponding sentrum version
+
+.SS Running the image
+.PP
+To run the image, simply run the following, passing in the \fBsentrum.toml\fR file you created and configured earlier:
+
+.EX
+docker run --rm -it --volume ./sentrum.toml:/sentrum.toml ghcr.io/sommerfelddev/sentrum:latest
+.EE
+
+.PP
+If using Docker compose, you can configure the service as follows:
+
+.EX
+services:
+  sentrum:
+    container_name: sentrum
+    image: ghcr.io/sommerfelddev/sentrum:latest
+    restart: unless-stopped
+    volumes:
+      - ./sentrum.toml:/sentrum.toml
+.EE
+
+.SH Future Work
+.RS
+.IP \(bu 2
+More action types:
+.RS
+.IP \(bu 2
+Matrix DM
+.IP \(bu 2
+SimpleX chat DM
+.IP \(bu 2
+IRC
+.IP \(bu 2
+XMPP
+.IP \(bu 2
+Whatsapp/Signal using linked devices (harder)
+.IP \(bu 2
+HTTP request
+
+.RE
+
+.IP \(bu 2
+More wallet types:
+.RS
+.IP \(bu 2
+Single Address (blocked by
+https://github.com/bitcoindevkit/bdk/issues/759)
+.IP \(bu 2
+Collections of wallets as a single entity
+
+.RE
+
+.IP \(bu 2
+Notifications for the first tx confirmation and after N confirmations
+.IP \(bu 2
+Filtering notifications by the transaction amounts (e.g. no action for
+transactions smaller than 1M sats)
+.IP \(bu 2
+Debian package (using \fBcargo-deb\fR)
+.IP \(bu 2
+Allow per wallet actions
+.IP \(bu 2
+Support other blockchain backends (bitcoind-rpc, explora, block filters, dojo)
+.IP \(bu 2
+Maybe create a little web UI that helps with writing the configuration
+.IP \(bu 2
+Incentivize node distributions to package sentrum
+
+.RE
