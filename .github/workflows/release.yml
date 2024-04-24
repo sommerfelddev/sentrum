@@ -36,6 +36,7 @@ jobs:
         cp target/release/${{ matrix.bin }} ${{ matrix.name }}
         cp sentrum.sample.toml ${{ matrix.name }}
         cp -r contrib ${{ matrix.name }}
+        cp -r man ${{ matrix.name }}
         cp LICENSE.txt ${{ matrix.name }}
         if [[ "${{ matrix.os }}" == "windows-latest" ]]
         then
