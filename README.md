@@ -310,30 +310,35 @@ spam your notification channels for every transaction.
 The ideal use-case is as a long running daemon, so it makes sense to configure
 it as a systemd service.
 
-If you are installing `sentrum` manually (e.g. from the releases page), you
-should:
+If you installed sentrum from the AUR, you just need to edit
+`/etc/sentrum/sentrum.conf` and do `sudo systemclt enable --now sentrum.service`
 
-1. Create a new `sentrum` user:
+If you are installing `sentrum` manually (e.g. from the releases page or `cargo
+install`), you should (either from the cloned repository or from inside the
+extracted release archive):
 
-```bash
-sudo useradd -d /var/lib/sentrum -m sentrum
-```
-
-2. Place the `sentrum.toml` configuration file in `/etc/sentrum`:
+1. Copy systemd files to appropriate places:
 
 ```bash
-sudo mkdir -p /etc/sentrum
-sudo cp sentrum.toml /etc/sentrum
-sudo chown -R sentrum:sentrum /etc/sentrum
+sudo cp contrib/systemd/sentrum.service
+sudo cp contrib/systemd/sentrum.sysusers /etc/sysusers.d/sentrum.conf
+sudo cp contrib/systemd/sentrum.tmpfiles /etc/tmpfiles.d/sentrum.conf
 ```
 
-3. Copy the [contrib/sentrum.service](contrib/sentrum.service) into the
-   `/etc/systemd/system`
-
-3. Reload systemd so that the service file can be found:
+2. Reload systemd daemon, sysusers and tmpfiles:
 
 ```bash
 sudo systemclt daemon-reload
+sudo systemd-sysusers
+sudo systemd-tmpfiles --create
+```
+
+3. Place the `sentrum.toml` (or `sentrum.sample.toml`) configuration file in
+`/etc/sentrum` and make sure the `sentrum` user owns it:
+
+```bash
+sudo cp sentrum.toml /etc/sentrum
+sudo chown sentrum:sentrum /etc/sentrum/sentrum.toml
 ```
 
 4. Enable and start the service:
