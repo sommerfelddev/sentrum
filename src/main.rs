@@ -155,7 +155,7 @@ async fn do_main() -> Result<()> {
 #[tokio::main]
 async fn main() {
     if let Err(e) = do_main().await {
-        error!("{:?}", e);
+        error!("{:#}", e);
         exit(1);
     }
 }

@@ -91,7 +91,7 @@ impl BlockchainState {
                     }
                 };
             }
-            Err(e) => warn!("could not reach '{}': {}", self.url, e),
+            Err(e) => warn!("could not reach '{}': {:#}", self.url, e),
         };
     }
 }

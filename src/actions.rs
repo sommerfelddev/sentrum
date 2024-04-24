@@ -115,7 +115,7 @@ pub async fn get_actions<'a>(
                 result.push(action);
             }
             Err(e) => {
-                warn!("could not register action '{}': {}", action_config, e);
+                warn!("[{}] could not register action: {:#}", action_config, e);
             }
         }
     }

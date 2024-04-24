@@ -156,7 +156,7 @@ impl<'a> NostrAction<'a> {
                 nip05::get_profile(&nostr_config.recipient, nostr_config.proxy)
                     .await
                     .with_context(|| {
-                        format!("invalid recipient '{}': {}", nostr_config.recipient, e)
+                        format!("invalid recipient '{}': {:#}", nostr_config.recipient, e)
                     })?
                     .public_key
             }

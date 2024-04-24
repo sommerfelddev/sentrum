@@ -183,13 +183,13 @@ impl WalletInfo {
     pub fn get_new_txs(&mut self) -> Vec<TransactionDetails> {
         debug!("[{}] syncing wallet", self.name);
         if let Err(e) = self.wallet.sync(&self.blockchain, SyncOptions::default()) {
-            warn!("[{}] cannot sync wallet: {}", self.name, e);
+            warn!("[{}] cannot sync wallet: {:#}", self.name, e);
             return Default::default();
         }
         let tx_list = match self.wallet.list_transactions(false) {
             Ok(txs) => txs,
             Err(e) => {
-                warn!("[{}] cannot retrieve transactions: {}", self.name, e);
+                warn!("[{}] cannot retrieve transactions: {:#}", self.name, e);
                 Default::default()
             }
         };
@@ -223,7 +223,7 @@ pub fn get_wallets(
                 })));
             }
             Err(e) => {
-                error!("[{}] cannot setup wallet: {}", name, e);
+                error!("[{}] cannot setup wallet: {:#}", name, e);
             }
         }
     }
