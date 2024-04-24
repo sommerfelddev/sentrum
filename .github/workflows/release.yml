@@ -17,7 +17,7 @@ jobs:
             name: sentrum-${{ github.ref_name }}-windows-x86_64.zip
           - os: macos-latest
             bin: sentrum
-            name: sentrum-${{ github.ref_name }}--darwin-x86_64.tar.gz
+            name: sentrum-${{ github.ref_name }}-darwin-x86_64.tar.gz
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
