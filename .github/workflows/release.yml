@@ -36,11 +36,13 @@ jobs:
         else
           tar czvf ${{ matrix.name }} target/release/${{ matrix.bin }} sentrum.sample.toml contrib/sentrum.service
         fi
+    - name: Generate Changelog
+      run: utils/generate_changelog.sh ${{ github.ref_name }} > ${{ github.workspace }}-CHANGELOG.md
     - name: Publish
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
-          body_path: docs/CHANGELOG.md
+          body_path: ${{ github.workspace }}-CHANGELOG.md
           draft: true
           fail_on_unmatched_files: true
           files: sentrum-*
