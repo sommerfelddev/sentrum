@@ -9,6 +9,11 @@ Daemon that monitors the Bitcoin blockchain for transactions involving your
 wallets and sends you notifications in many different channels (ntfy push
 notifications, email, telegram, nostr, arbitrary command, etc).
 
+Example screenshot of many noifications for a single transaction:
+<p align="center">
+  <img src="https://i.nostr.build/nWkqo.jpg" width="540" height="692">
+</p>
+
 ## Installation
 
 Either:
