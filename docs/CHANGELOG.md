@@ -1,7 +1,6 @@
 0.1.5 (2024-04-24)
 ------------------
-* Release aarch64 builds
-* Improve action failure logging
+* Improved action failure logging
 
 0.1.{2,3,4} (2024-04-23)
 ------------------
