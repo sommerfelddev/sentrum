@@ -45,7 +45,7 @@ jobs:
           tar czvf ${{ matrix.name }}.tar.gz ${{ matrix.name }}
         fi
     - name: Generate Changelog
-      run: utils/generate_changelog.sh ${{ github.ref_name }} > ${{ github.workspace }}-CHANGELOG.md
+      run: utils/generate_changelog.sh > ${{ github.workspace }}-CHANGELOG.md
     - name: Publish
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
