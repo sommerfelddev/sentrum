@@ -1,3 +1,7 @@
+0.1.7 (2024-04-24)
+------------------
+* Improvements to release procedure
+
 0.1.6 (2024-04-24)
 ------------------
 * Improved systemd setup and instructions
