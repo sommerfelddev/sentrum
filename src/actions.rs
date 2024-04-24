@@ -108,10 +108,10 @@ pub async fn get_actions<'a>(
 
     // TODO: parallelize this. It's hard because the result vector needs to be shared.
     for action_config in actions_config {
-        debug!("registering action '{}'", action_config);
+        debug!("[{}] registering action", action_config);
         match get_action(message_config, action_config).await {
             Ok(action) => {
-                info!("registered action '{}'", action_config);
+                info!("[{}] registered action", action_config);
                 result.push(action);
             }
             Err(e) => {
@@ -127,10 +127,20 @@ pub async fn run_actions(
     actions: &[&(dyn Action<'_> + Sync)],
     params: Option<MessageParams<'_, '_>>,
 ) {
+    let params_ref = params.as_ref();
     TokioScope::scope_and_block(|s| {
         for &action in actions {
-            debug!("running '{}' action", action.name());
-            s.spawn(action.run(params.as_ref()));
+            s.spawn(async {
+                info!(
+                    "[{}][{}][{}] running",
+                    params_ref.map(|p| p.wallet()).unwrap_or("wallet"),
+                    params_ref
+                        .map(|p| p.txid_short())
+                        .unwrap_or("txid".to_string()),
+                    action.name()
+                );
+                action.run(params_ref);
+            });
         }
     });
 }

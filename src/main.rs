@@ -74,7 +74,11 @@ async fn get_and_handle_new_txs(
     TokioScope::scope_and_block(|s| {
         for tx in txs.iter() {
             let params = MessageParams::new(tx, &locked_wallet_info);
-            info!("running actions for txid '{}'", params.txid_short());
+            info!(
+                "[{}][{}] running actions",
+                params.wallet(),
+                params.txid_short()
+            );
             s.spawn(run_actions(actions, Some(params)));
         }
     });
