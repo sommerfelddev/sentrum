@@ -18,7 +18,9 @@ Either:
 * Download the binary from the
 [releases page](https://github.com/sommerfelddev/sentrum/releases)
 * If using archlinux, install it from the AUR:
-[sentrum](https://aur.archlinux.org/packages/sentrum) or [sentrum-git](https://aur.archlinux.org/packages/sentrum-git)
+[sentrum](https://aur.archlinux.org/packages/sentrum),
+[sentrum-bin](https://aur.archlinux.org/packages/sentrum-bin) or
+[sentrum-git](https://aur.archlinux.org/packages/sentrum-git)
 
 ## Configuration
 
