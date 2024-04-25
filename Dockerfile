@@ -11,6 +11,7 @@ FROM debian:bookworm-slim as final
 RUN apt-get update \
     && apt-get upgrade -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libssl-dev \
+    ca-certificates \
     && apt clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=builder /usr/src/sentrum/target/release/sentrum /usr/local/bin/sentrum
