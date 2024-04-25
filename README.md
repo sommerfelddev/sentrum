@@ -18,10 +18,10 @@ Example screenshot of many noifications for a single transaction:
 
 Either:
 
-* Compile from source using `cargo install sentrum` (binary will be installed in
-`~/.cargo/bin`)
 * Download the binary from the
 [releases page](https://github.com/sommerfelddev/sentrum/releases)
+* Install `cargo`, compile from source using `cargo install sentrum` (binary
+will be installed in `~/.cargo/bin`)
 * If using archlinux, install it from the AUR:
 [sentrum](https://aur.archlinux.org/packages/sentrum),
 [sentrum-bin](https://aur.archlinux.org/packages/sentrum-bin) or
@@ -46,7 +46,6 @@ invocation and that will override any of the above.
 
 ```bash
 cp sentrum.sample.toml sentrum.toml
-sudo cp sentrum.sample.toml /etc/sentrum/sentrum.toml
 ```
 
 or
