@@ -11,6 +11,7 @@ cd "$(mktemp -d)"
 
 wget "https://github.com/sommerfelddev/sentrum/releases/download/$tag/sentrum-$tag-darwin-x86_64.tar.gz"
 wget "https://github.com/sommerfelddev/sentrum/releases/download/$tag/sentrum-$tag-linux-x86_64.tar.gz"
+wget "https://github.com/sommerfelddev/sentrum/releases/download/$tag/sentrum-$tag-linux-aarch64.tar.gz"
 wget "https://github.com/sommerfelddev/sentrum/releases/download/$tag/sentrum-$tag-windows-x86_64.zip"
 
 sha256sum -b -- * > sentrum-"$tag"-manifest.txt
