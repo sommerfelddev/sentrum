@@ -1,3 +1,7 @@
+0.1.8 (2024-04-25)
+------------------
+* Release aarch64 builds
+
 0.1.7 (2024-04-24)
 ------------------
 * Improvements to release procedure
