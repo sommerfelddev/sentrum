@@ -11,6 +11,11 @@ xpub = "xpub6CkXHzuU1NyHUFNiQZLq2bgt6QPqjZbwpJ1MDgDeo4bWZ8ZP7HZr7v9WTLCQFhxVhqiJ
 #name = "bob"
 #xpub = "xpubblablabla"
 
+# Another wallet but using descriptors
+# [[wallets]]
+# name = "charlie"
+# descriptor = "wsh(sortedmulti(2,[bbc5fee8/48h/1h/0h/2h]xpubDEuo3nCajorgHFrA5unQB3dSR3Mh7EPfedyU36GC2wVLwB32PsDuiPcsw5RobqNRfQyjas3cxeEraxs6HYJvQPcNX5neut2jRvZijyxLiqT/<0;1>/*,[3f007faa/48h/1h/0h/2h]xpubDEgyzFTDNEUcy674okNRZFuV1Q3P3RNdhd5FwncHBZ9DpZNHR3FGm5c4n8co1Efg3Xv6cUCPuPraJ85j8CV2QXqhLdXn38uyNoSX3rVMpbC/<0;1>/*,[c478c82d/48h/1h/0h/2h]xpubDFKmAnxyJKb7LLQ2UDU4ytFZ1Lx5R7C9op23Ew7zxDwCHDMUhqWfmgMi7d6YNSfKnsW3wp9QEU4TuNJxcPCcAi4ddCYsVL9ken6tWGPD9jz/<0;1>/*))#3l992dql"
+
 [[actions]]
 type =  "terminal_print"
 
