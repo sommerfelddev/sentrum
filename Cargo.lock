@@ -2904,6 +2904,7 @@ dependencies = [
  "pretty_env_logger",
  "regex",
  "serde",
+ "serde_json",
  "strfmt",
  "systemd-directories",
  "teloxide",

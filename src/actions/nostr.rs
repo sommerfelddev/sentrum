@@ -1,14 +1,15 @@
-use super::Action;
-use crate::message::MessageConfig;
-use crate::message::MessageParams;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Write;
+use std::net::SocketAddr;
+use std::path::PathBuf;
+
 use anyhow::{Context, Result};
 use async_scoped::TokioScope;
 use async_trait::async_trait;
 use const_format::formatcp;
 use nostr_relay_pool::RelayOptions;
 use nostr_sdk::nips::nip05;
-use nostr_sdk::serde_json::from_reader;
-use nostr_sdk::serde_json::to_string;
 use nostr_sdk::Client;
 use nostr_sdk::Keys;
 use nostr_sdk::Metadata;
@@ -16,11 +17,12 @@ use nostr_sdk::PublicKey;
 use nostr_sdk::ToBech32;
 use serde::Deserialize;
 use serde::Serialize;
-use std::fs::File;
-use std::io::BufReader;
-use std::io::Write;
-use std::net::SocketAddr;
-use std::path::PathBuf;
+use serde_json::from_reader;
+use serde_json::to_string;
+
+use super::Action;
+use crate::message::MessageConfig;
+use crate::message::MessageParams;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct NostrData {
