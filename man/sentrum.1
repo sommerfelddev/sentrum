@@ -23,12 +23,12 @@ Either:
 
 .RS
 .IP \(bu 2
-Compile from source using \fBcargo install sentrum\fR (binary will be installed in
-\fB~/.cargo/bin\fR)
-.IP \(bu 2
 Download the binary from the
 releases page
 \[la]https://github.com/sommerfelddev/sentrum/releases\[ra]
+.IP \(bu 2
+Install \fBcargo\fR, compile from source using \fBcargo install sentrum\fR (binary
+will be installed in \fB~/.cargo/bin\fR)
 .IP \(bu 2
 If using archlinux, install it from the AUR:
 sentrum
@@ -67,7 +67,6 @@ invocation and that will override any of the above.
 
 .EX
 cp sentrum.sample.toml sentrum.toml
-sudo cp sentrum.sample.toml /etc/sentrum/sentrum.toml
 .EE
 
 .PP
@@ -126,9 +125,30 @@ It assumes a BIP84 (native segwit, \fBbc1\fR style addresses) wallet. If your wa
 has a different script kind add the field \fBkind = "legacy"\fR (or \fBnested_segwit\fR,
 or \fBtaproot\fR).
 
+.SS Multisig and friends
 .PP
-More complex wallet types are supported by providing \fBprimary = "<desc>"\fR and
-\fBchange = "<desc>"\fR wallet descriptors instead of \fBxpub =\fR and \fBkind =\fR\&.
+More complex wallet types are supported by providing \fBdescriptor = "<desc>"\fR and
+\fBchange_descriptor = "<desc>"\fR wallet descriptors instead of \fBxpub =\fR and
+\fBkind =\fR\&. You don't need to provide \fBchange_descriptor\fR, it's optional, and
+many times the main descriptor already includes it. Example:
+
+.EX
+[[wallets]]
+name = "charlie"
+descriptor = "wsh(sortedmulti(2,[bbc5fee8/48h/1h/0h/2h]tpubDEuo3nCajorgHFrA5unQB3dSR3Mh7EPfedyU36GC2wVLwB32PsDuiPcsw5RobqNRfQyjas3cxeEraxs6HYJvQPcNX5neut2jRvZijyxLiqT/<0;1>/*,[3f007faa/48h/1h/0h/2h]tpubDEgyzFTDNEUcy674okNRZFuV1Q3P3RNdhd5FwncHBZ9DpZNHR3FGm5c4n8co1Efg3Xv6cUCPuPraJ85j8CV2QXqhLdXn38uyNoSX3rVMpbC/<0;1>/*,[c478c82d/48h/1h/0h/2h]tpubDFKmAnxyJKb7LLQ2UDU4ytFZ1Lx5R7C9op23Ew7zxDwCHDMUhqWfmgMi7d6YNSfKnsW3wp9QEU4TuNJxcPCcAi4ddCYsVL9ken6tWGPD9jz/<0;1>/*))#3l992dql"
+.EE
+
+.PP
+You can retrieve the wallet descriptor for practically any wallet using Sparrow
+Wallet by opening the wallet, going to
+\fBSettings >> Script Policy >> Descriptor Edit\fR\&. A window will pop-up where you
+can copy the wallet descriptor string and paste it as the \fBdescriptor =\fR value
+of the \fBsentrum.toml\fR\&.
+
+.PP
+Not all scripts are supported. \fBsentrum\fR depends on bdk which only supports
+these scripts
+\[la]https://bitcoindevkit.org/descriptors/\[ra]\&.
 
 .SH Actions
 .PP
@@ -155,14 +175,7 @@ This is the best straightforward way to get push notifications on a smartphone.
 .IP "  1." 5
 Install the android/iOS app following the relevant links in https://ntfy.sh
 .IP "  2." 5
-If you don't run your own ntfy self-hosted server, create an account at
-ntfy.sh
-.IP "  3." 5
-Open the app, give it the needed permissions and configure your account
-credentials
-.IP "  4." 5
-Click on the \fB+\fR button and create a "topic", preferably named \fBsentrum\fR
-since that's what will be used by default.
+Open the app, give it the needed permissions
 
 .RE
 
@@ -172,18 +185,31 @@ Then you just need to add the relevant configuration:
 .EX
 [[actions]]
 type =  "ntfy"
-# Credentials (required if you use a public server like the default one)
-credentials.username = "<YOUR USERNAME HERE>"
-credentials.password = "<YOUR PASSWORD HERE>"
+#
+# EVERYTHING BELOW IS OPTIONAL
+#
+# Credentials (optional, relevant for self-hosted instances or paid reserved topics)
+#credentials.username = "<YOUR USERNAME HERE>"
+#credentials.password = "<YOUR PASSWORD HERE>"
 # ntfy server (optional)
 #url = "https://ntfy.sh"
-# notification channel name (optional)
-#topic = "sentrum"
+# notification channel name (optional, defaults to random string for security)
+#topic = "<RANDOM TOPIC NAME>"
 # Proxy used to connect (optional, defaults to None)
 #proxy = "socks5://127.0.0.1:9050"
 # Priority ("max", "high", "default", "low", "min") (optional)
 #priority = "default"
 .EE
+
+.PP
+If you don't set a \fBtopic =\fR, \fBsentrum\fR will auto-generate one for you randomly
+(since topic names are kind of like a password for the public default ntfy.sh
+server). When you later run \fBsentrum\fR, it will print out the topic name it's
+using.
+
+.PP
+Open the ntfy app, click on the \fB+\fR button, create a "topic" and set the same
+equal to the one should be the \fBsentrum\fR logs.
 
 .SS nostr
 .PP
@@ -406,7 +432,7 @@ Copy systemd files to appropriate places:
 .RE
 
 .EX
-sudo cp contrib/systemd/sentrum.service
+sudo cp contrib/systemd/sentrum.service /etc/systemd/system
 sudo cp contrib/systemd/sentrum.sysusers /etc/sysusers.d/sentrum.conf
 sudo cp contrib/systemd/sentrum.tmpfiles /etc/tmpfiles.d/sentrum.conf
 .EE
