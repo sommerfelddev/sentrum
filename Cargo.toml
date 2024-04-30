@@ -43,4 +43,4 @@ nostr-sdk = { version = "0.30.0", features = ["nip04", "nip05", "nip44", "nip59"
 nostr-relay-pool = { version = "0.30.0", optional = true }
 
 [target.aarch64-unknown-linux-gnu.dependencies]
-openssl = { version = "*", features = ["vendored"] }
+openssl = { version = "0.10.64", features = ["vendored"] }
