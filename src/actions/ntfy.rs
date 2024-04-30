@@ -1,15 +1,76 @@
-use super::Action;
-use crate::message::MessageConfig;
-use crate::message::MessageFormat;
-use crate::message::MessageParams;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Write;
+use std::path::PathBuf;
+
+use anyhow::Context;
 use anyhow::Result;
 use async_trait::async_trait;
+use log::info;
 use ntfy::Auth;
 use ntfy::Dispatcher;
 use ntfy::Payload;
 use ntfy::Priority;
 use ntfy::Url;
+use rand::distributions::Alphanumeric;
+use rand::thread_rng;
+use rand::Rng;
 use serde::Deserialize;
+use serde::Serialize;
+use serde_json::from_reader;
+use serde_json::to_string;
+
+use super::Action;
+use crate::message::MessageConfig;
+use crate::message::MessageFormat;
+use crate::message::MessageParams;
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+struct NtfyData {
+    topic: String,
+}
+
+fn get_random_topic() -> String {
+    thread_rng()
+        .sample_iter(&Alphanumeric)
+        .take(16)
+        .map(char::from)
+        .collect()
+}
+
+impl Default for NtfyData {
+    fn default() -> Self {
+        NtfyData {
+            topic: get_random_topic(),
+        }
+    }
+}
+
+fn get_ntfy_data_filepath() -> PathBuf {
+    dirs::cache_dir()
+        .unwrap_or(PathBuf::from("cache"))
+        .join(env!("CARGO_PKG_NAME"))
+        .join("ntfy.json")
+}
+
+fn get_ntfy_topic() -> Result<String> {
+    let path = get_ntfy_data_filepath();
+    Ok(match File::open(&path) {
+        Ok(file) => {
+            let reader = BufReader::new(file);
+            from_reader(reader)
+                .with_context(|| format!("cannot read ntfy data from '{}'", path.display()))
+        }
+        Err(_) => {
+            let ntfy_data = NtfyData::default();
+            let mut file = File::create(&path)?;
+            file.write_all(to_string(&ntfy_data)?.as_bytes())
+                .with_context(|| format!("could not write ntfy data to '{}'", path.display()))?;
+            Ok(ntfy_data)
+        }
+    }?
+    .topic)
+}
 
 #[derive(Deserialize, Debug)]
 #[serde(remote = "Priority")]
@@ -49,8 +110,8 @@ impl NtfyConfig {
         self.url.as_deref().unwrap_or("https://ntfy.sh")
     }
 
-    pub fn topic(&self) -> &str {
-        self.topic.as_deref().unwrap_or(env!("CARGO_PKG_NAME"))
+    pub fn topic(&self) -> Option<&str> {
+        self.topic.as_deref()
     }
 }
 
@@ -71,7 +132,17 @@ impl<'a> NtfyAction<'a> {
             dispatcher_builder = dispatcher_builder.proxy(proxy);
         }
 
-        let mut payload = Payload::new(ntfy_config.topic())
+        let topic = ntfy_config
+            .topic()
+            .unwrap_or(&get_ntfy_topic()?)
+            .to_string();
+        info!(
+            "[ntfy] using topic '{}', connect to {}/{}",
+            topic,
+            ntfy_config.url(),
+            topic
+        );
+        let mut payload = Payload::new(&topic)
             .markdown(match message_config.format() {
                 MessageFormat::Plain => false,
                 MessageFormat::Markdown => true,

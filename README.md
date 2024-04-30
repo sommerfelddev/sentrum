@@ -136,30 +136,37 @@ accounts for some reason).
 This is the best straightforward way to get push notifications on a smartphone.
 
 1. Install the android/iOS app following the relevant links in https://ntfy.sh
-2. If you don't run your own ntfy self-hosted server, create an account at
-   ntfy.sh
-3. Open the app, give it the needed permissions and configure your account
-   credentials
-4. Click on the `+` button and create a "topic", preferably named `sentrum`
-   since that's what will be used by default.
+2. Open the app, give it the needed permissions
 
 Then you just need to add the relevant configuration:
 
 ```toml
 [[actions]]
 type =  "ntfy"
-# Credentials (required if you use a public server like the default one)
-credentials.username = "<YOUR USERNAME HERE>"
-credentials.password = "<YOUR PASSWORD HERE>"
+#
+# EVERYTHING BELOW IS OPTIONAL
+#
+# Credentials (optional, relevant for self-hosted instances or paid reserved topics)
+#credentials.username = "<YOUR USERNAME HERE>"
+#credentials.password = "<YOUR PASSWORD HERE>"
 # ntfy server (optional)
 #url = "https://ntfy.sh"
-# notification channel name (optional)
-#topic = "sentrum"
+# notification channel name (optional, defaults to random string for security)
+#topic = "<RANDOM TOPIC NAME>"
 # Proxy used to connect (optional, defaults to None)
 #proxy = "socks5://127.0.0.1:9050"
 # Priority ("max", "high", "default", "low", "min") (optional)
 #priority = "default"
 ```
+
+If you don't set a `topic = `, `sentrum` will auto-generate one for you randomly
+(since topic names are kind of like a password for the public default ntfy.sh
+server). When you later run `sentrum`, it will print out the topic name it's
+using.
+
+Open the ntfy app, click on the `+` button, create a "topic" and set the same
+equal to the one should be the `sentrum` logs.
+
 
 ### nostr
 
