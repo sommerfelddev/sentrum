@@ -1,3 +1,12 @@
+0.1.9 (2024-04-30)
+------------------
+* Improve multsig wallet support and documentation
+* Breaking: ntfy action no longer defaults to use "sentrum" as a topic name.
+That was highly insecure when used on the ntfy.sh default public server. It will
+now default to randomly generating a topic name that will be output in the
+terminal. If you were using the old default, you should now look at the terminal
+output to retrieve the topic name and add it to your ntfy app.
+
 0.1.8 (2024-04-25)
 ------------------
 * Release aarch64 builds
