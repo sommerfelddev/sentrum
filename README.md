@@ -93,8 +93,27 @@ It assumes a BIP84 (native segwit, `bc1` style addresses) wallet. If your wallet
 has a different script kind add the field `kind = "legacy"` (or `nested_segwit`,
 or `taproot`).
 
-More complex wallet types are supported by providing `primary = "<desc>"` and
-`change = "<desc>"` wallet descriptors instead of `xpub =` and `kind = `.
+### Multisig and friends
+
+More complex wallet types are supported by providing `descriptor = "<desc>"` and
+`change_descriptor = "<desc>"` wallet descriptors instead of `xpub =` and
+`kind = `. You don't need to provide `change_descriptor`, it's optional, and
+many times the main descriptor already includes it. Example:
+
+```toml
+[[wallets]]
+name = "charlie"
+descriptor = "wsh(sortedmulti(2,[bbc5fee8/48h/1h/0h/2h]tpubDEuo3nCajorgHFrA5unQB3dSR3Mh7EPfedyU36GC2wVLwB32PsDuiPcsw5RobqNRfQyjas3cxeEraxs6HYJvQPcNX5neut2jRvZijyxLiqT/<0;1>/*,[3f007faa/48h/1h/0h/2h]tpubDEgyzFTDNEUcy674okNRZFuV1Q3P3RNdhd5FwncHBZ9DpZNHR3FGm5c4n8co1Efg3Xv6cUCPuPraJ85j8CV2QXqhLdXn38uyNoSX3rVMpbC/<0;1>/*,[c478c82d/48h/1h/0h/2h]tpubDFKmAnxyJKb7LLQ2UDU4ytFZ1Lx5R7C9op23Ew7zxDwCHDMUhqWfmgMi7d6YNSfKnsW3wp9QEU4TuNJxcPCcAi4ddCYsVL9ken6tWGPD9jz/<0;1>/*))#3l992dql"
+```
+
+You can retrieve the wallet descriptor for practically any wallet using Sparrow
+Wallet by opening the wallet, going to
+`Settings >> Script Policy >> Descriptor Edit`. A window will pop-up where you
+can copy the wallet descriptor string and paste it as the `descriptor =` value
+of the `sentrum.toml`.
+
+Not all scripts are supported. `sentrum` depends on bdk which only supports
+[these scripts](https://bitcoindevkit.org/descriptors/).
 
 ## Actions
 
@@ -326,7 +345,7 @@ extracted release archive):
 1. Copy systemd files to appropriate places:
 
 ```bash
-sudo cp contrib/systemd/sentrum.service
+sudo cp contrib/systemd/sentrum.service /etc/systemd/system
 sudo cp contrib/systemd/sentrum.sysusers /etc/sysusers.d/sentrum.conf
 sudo cp contrib/systemd/sentrum.tmpfiles /etc/tmpfiles.d/sentrum.conf
 ```

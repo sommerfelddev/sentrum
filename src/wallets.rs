@@ -14,6 +14,7 @@ use bdk::{
     KeychainKind, SyncOptions, TransactionDetails, Wallet,
 };
 use log::{debug, error, warn};
+use regex::Regex;
 use serde::Deserialize;
 
 use crate::blockchain::{get_blockchain, ElectrumConfig};
@@ -48,11 +49,11 @@ impl XpubSpec {
     }
 }
 
-#[derive(Deserialize, Debug, Hash)]
+#[derive(Deserialize, Debug, Hash, Clone)]
 pub struct DescriptorsSpec {
     name: String,
-    primary: String,
-    change: Option<String>,
+    descriptor: String,
+    change_descriptor: Option<String>,
 }
 
 impl DescriptorsSpec {
@@ -62,17 +63,34 @@ impl DescriptorsSpec {
         s.finish().to_string()
     }
 
-    pub fn primary(&self) -> &str {
-        &self.primary
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
     }
 
-    pub fn change(&self) -> Option<&String> {
-        self.change.as_ref()
+    pub fn change_descriptor(&self) -> Option<&str> {
+        self.change_descriptor.as_deref()
     }
 
     pub fn name(&self) -> &str {
         &self.name
     }
+}
+
+fn handle_multipart_descritor(desc_spec: &DescriptorsSpec) -> Result<DescriptorsSpec> {
+    if !desc_spec.descriptor().contains("<0;1>") {
+        return Ok(desc_spec.clone());
+    }
+
+    let desc_no_checksum = Regex::new("#[A-Za-z0-9]+$")?.replace(desc_spec.descriptor(), "");
+
+    let desc = desc_no_checksum.replace("<0;1>", "0");
+    let change_desc = desc_no_checksum.replace("<0;1>", "1");
+
+    Ok(DescriptorsSpec {
+        name: desc_spec.name().to_string(),
+        descriptor: desc,
+        change_descriptor: Some(change_desc),
+    })
 }
 
 #[derive(Deserialize, Debug)]
@@ -136,9 +154,10 @@ fn get_descriptors_wallet(
     network: Network,
 ) -> Result<Wallet<sled::Tree>> {
     let sled = sled::open(get_cache_dir(&descriptors_spec.get_hash()))?.open_tree("wallet")?;
+    let desc_spec_no_multi = handle_multipart_descritor(descriptors_spec)?;
     Wallet::new(
-        descriptors_spec.primary(),
-        descriptors_spec.change().map(String::as_ref),
+        desc_spec_no_multi.descriptor(),
+        desc_spec_no_multi.change_descriptor(),
         network,
         sled,
     )
