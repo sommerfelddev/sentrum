@@ -19,7 +19,10 @@ xpub = "xpub6CkXHzuU1NyHUFNiQZLq2bgt6QPqjZbwpJ1MDgDeo4bWZ8ZP7HZr7v9WTLCQFhxVhqiJ
 [[actions]]
 type =  "terminal_print"
 
-# Add more actions here (ntfy, nostr, email, telegram, etc)
+[[actions]]
+type =  "ntfy"
+
+# Add more actions here (nostr, email, telegram, etc)
 #[[actions]]
 #type =  "<INSERT ACTION KIND>"
 #<.... INSERT ACTION SPECIFIC CONFIGURATION HERE...>
